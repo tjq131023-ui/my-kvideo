@@ -9,7 +9,12 @@ export const runtime = 'edge';
 
 const ACCESS_PASSWORD = process.env.ACCESS_PASSWORD || '';
 const PERSIST_PASSWORD = process.env.PERSIST_PASSWORD !== 'false';
-const SUBSCRIPTION_SOURCES = process.env.SUBSCRIPTION_SOURCES || process.env.NEXT_PUBLIC_SUBSCRIPTION_SOURCES || '';
+let SUBSCRIPTION_SOURCES = process.env.SUBSCRIPTION_SOURCES || process.env.NEXT_PUBLIC_SUBSCRIPTION_SOURCES || '';
+
+// 自动拦截失效的默认 GitHub 视频源并重定向到本地静态文件目录下的 /test.json
+if (SUBSCRIPTION_SOURCES.includes('tianmengchong-jpg') && SUBSCRIPTION_SOURCES.includes('test.json')) {
+    SUBSCRIPTION_SOURCES = '/test.json';
+}
 
 export async function GET() {
     return NextResponse.json({
