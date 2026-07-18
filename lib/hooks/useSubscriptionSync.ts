@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { settingsStore } from '@/lib/store/settings-store';
 import { fetchSourcesFromUrl, mergeSources } from '@/lib/utils/source-import-utils';
 import type { SourceSubscription } from '@/lib/types';
@@ -9,32 +9,38 @@ const SYNC_COOLDOWN_MS = 5 * 60 * 1000;
 const INITIAL_SYNC_DELAY_MS = 1000;
 
 export function useSubscriptionSync() {
-    // Track if we've already synced during this component lifecycle
-    const hasSyncedRef = useRef(false);
-    // Track if sync is currently in progress to avoid concurrent syncs
+    const [subscriptions, setSubscriptions] = useState<SourceSubscription[]>([]);
     const isSyncingRef = useRef(false);
 
-    // Effect to run sync only once on mount
+    // 1. Subscribe to settingsStore changes to keep local state in sync
     useEffect(() => {
-        // Prevent multiple syncs if this effect runs multiple times (React StrictMode)
-        if (hasSyncedRef.current || isSyncingRef.current) return;
+        setSubscriptions(settingsStore.getSettings().subscriptions);
+        
+        const unsubscribe = settingsStore.subscribe(() => {
+            setSubscriptions(settingsStore.getSettings().subscriptions);
+        });
+        
+        return unsubscribe;
+    }, []);
+
+    // 2. Perform sync when subscriptions change
+    useEffect(() => {
+        const activeSubscriptions = subscriptions.filter((s: SourceSubscription) => s.autoRefresh !== false);
+
+        if (activeSubscriptions.length === 0) {
+            return;
+        }
+
+        // Prevent concurrent syncs
+        if (isSyncingRef.current) return;
 
         const sync = async () => {
-            // Double-check to prevent race conditions
-            if (hasSyncedRef.current || isSyncingRef.current) return;
-
+            if (isSyncingRef.current) return;
             isSyncingRef.current = true;
 
             try {
-                // Read subscriptions directly from store (not via state to avoid re-renders)
+                // Read fresh settings copy
                 const settings = settingsStore.getSettings();
-                const activeSubscriptions = settings.subscriptions.filter((s: SourceSubscription) => s.autoRefresh !== false);
-
-                if (activeSubscriptions.length === 0) {
-                    hasSyncedRef.current = true;
-                    return;
-                }
-
                 let anyChanged = false;
                 let currentSources = [...settings.sources];
                 let currentPremiumSources = [...settings.premiumSources];
@@ -51,11 +57,10 @@ export function useSubscriptionSync() {
                 );
 
                 if (subsToSync.length === 0) {
-                    hasSyncedRef.current = true;
                     return;
                 }
 
-                // Fetch all subscriptions in parallel for better performance
+                // Fetch all subscriptions in parallel
                 const results = await Promise.allSettled(
                     subsToSync.map((sub: SourceSubscription) => fetchSourcesFromUrl(sub.url))
                 );
@@ -76,7 +81,7 @@ export function useSubscriptionSync() {
                             anyChanged = true;
                         }
 
-                        // Update timestamp for successful sync
+                        // Update timestamp
                         const subIdx = updatedSubscriptions.findIndex(s => s.id === sub.id);
                         if (subIdx !== -1) {
                             updatedSubscriptions[subIdx] = {
@@ -98,15 +103,13 @@ export function useSubscriptionSync() {
                         subscriptions: updatedSubscriptions
                     });
                 }
-
-                hasSyncedRef.current = true;
             } finally {
                 isSyncingRef.current = false;
             }
         };
 
-        // Small delay to ensure settings are fully loaded
+        // Small delay to ensure state stability
         const timeoutId = setTimeout(sync, INITIAL_SYNC_DELAY_MS);
         return () => clearTimeout(timeoutId);
-    }, []); // Empty dependency array - only run once on mount
+    }, [subscriptions]);
 }
