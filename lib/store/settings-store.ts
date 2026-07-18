@@ -76,11 +76,11 @@ function getEnvSubscriptions(customValue?: string): SourceSubscription[] {
 
   // 2. Try Simple URL (or comma separated)
   // Check if it looks like a URL (basic check)
-  if (envValue.includes('http')) {
+  if (envValue.includes('http') || envValue.startsWith('/')) {
     const urls = envValue.split(',').map(u => u.trim()).filter(u => u.length > 0);
     return urls.map((url, index) => {
       // Basic URL validation
-      if (!url.startsWith('http')) return null;
+      if (!url.startsWith('http') && !url.startsWith('/')) return null;
 
       const name = urls.length > 1
         ? `系统预设源 ${index + 1}`
