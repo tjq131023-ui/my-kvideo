@@ -42,8 +42,12 @@ export function useSubscriptionSync() {
                 const now = Date.now();
 
                 // Filter out subscriptions that were synced recently (within cooldown period)
+                // Note: local relative path subscriptions (starts with '/') bypass the cooldown for instant sync
                 const subsToSync = activeSubscriptions.filter(
-                    (sub: SourceSubscription) => !(sub.lastUpdated && now - sub.lastUpdated < SYNC_COOLDOWN_MS)
+                    (sub: SourceSubscription) => {
+                        if (sub.url.startsWith('/')) return true;
+                        return !(sub.lastUpdated && now - sub.lastUpdated < SYNC_COOLDOWN_MS);
+                    }
                 );
 
                 if (subsToSync.length === 0) {
