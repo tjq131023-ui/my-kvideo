@@ -11,6 +11,8 @@ const INITIAL_SYNC_DELAY_MS = 1000;
 export function useSubscriptionSync() {
     const [subscriptions, setSubscriptions] = useState<SourceSubscription[]>([]);
     const isSyncingRef = useRef(false);
+    // Track synced urls in this lifecycle to prevent infinite loop re-renders
+    const syncedUrlsRef = useRef<Set<string>>(new Set());
 
     // 1. Subscribe to settingsStore changes to keep local state in sync
     useEffect(() => {
@@ -47,11 +49,12 @@ export function useSubscriptionSync() {
                 let updatedSubscriptions = [...settings.subscriptions];
                 const now = Date.now();
 
-                // Filter out subscriptions that were synced recently (within cooldown period)
-                // Note: local relative path subscriptions (starts with '/') bypass the cooldown for instant sync
+                // Filter out subscriptions that were synced recently OR already synced in this session
                 const subsToSync = activeSubscriptions.filter(
                     (sub: SourceSubscription) => {
-                        if (sub.url.startsWith('/')) return true;
+                        if (syncedUrlsRef.current.has(sub.url)) return false; // Skip if already synced this session
+                        
+                        if (sub.url.startsWith('/')) return true; // Local path bypasses cooldown
                         return !(sub.lastUpdated && now - sub.lastUpdated < SYNC_COOLDOWN_MS);
                     }
                 );
@@ -59,6 +62,9 @@ export function useSubscriptionSync() {
                 if (subsToSync.length === 0) {
                     return;
                 }
+
+                // Mark them as synced immediately to prevent race conditions
+                subsToSync.forEach(sub => syncedUrlsRef.current.add(sub.url));
 
                 // Fetch all subscriptions in parallel
                 const results = await Promise.allSettled(
@@ -92,6 +98,8 @@ export function useSubscriptionSync() {
                         }
                     } else {
                         console.error(`Failed to sync subscription: ${sub.name}`, result.reason);
+                        // If failed, remove from syncedUrls so it might retry later
+                        syncedUrlsRef.current.delete(sub.url);
                     }
                 });
 
