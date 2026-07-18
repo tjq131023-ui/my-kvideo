@@ -139,33 +139,93 @@
     "parses": [
         {
             "key": "xmflv",
-            "name": "解析①",
+            "name": "闪电解析",
             "type": 1,
             "url": "https://jx.xmflv.cc/?url="
         },
         {
-            "key": "yparse",
-            "name": "解析②",
-            "type": 1,
-            "url": "https://jx.yparse.com/index.php?url="
-        },
-        {
             "key": "okjx",
-            "name": "解析③",
+            "name": "OK解析",
             "type": 1,
             "url": "https://okjx.cc/?url="
         },
         {
+            "key": "yparse",
+            "name": "Y解析",
+            "type": 1,
+            "url": "https://jx.yparse.com/index.php?url="
+        },
+        {
             "key": "m3u8tv",
-            "name": "解析④",
+            "name": "M3U8解析",
             "type": 1,
             "url": "https://jx.m3u8.tv/jiexi/?url="
         },
         {
             "key": "blm3u8",
-            "name": "解析⑤",
+            "name": "蓝光解析",
             "type": 1,
             "url": "https://jx.bozrc.com:4433/player/?url="
+        },
+        {
+            "key": "aidou",
+            "name": "爱豆解析",
+            "type": 1,
+            "url": "https://jx.aidouer.net/?url="
+        },
+        {
+            "key": "yemu",
+            "name": "夜幕解析",
+            "type": 1,
+            "url": "https://www.yemu.xyz/?url="
+        },
+        {
+            "key": "8090g",
+            "name": "8090解析",
+            "type": 1,
+            "url": "https://www.8090g.cn/?url="
+        },
+        {
+            "key": "json",
+            "name": "JSON解析",
+            "type": 1,
+            "url": "https://jx.jsonplayer.com/player/?url="
+        },
+        {
+            "key": "we1",
+            "name": "WE解析",
+            "type": 1,
+            "url": "https://jx.we1.cc/?url="
+        },
+        {
+            "key": "nnmm",
+            "name": "NN解析",
+            "type": 1,
+            "url": "https://jx.nnmm.top/?url="
+        },
+        {
+            "key": "vip168",
+            "name": "VIP解析",
+            "type": 1,
+            "url": "https://jx.vip168.cc/?url="
+        },
+        {
+            "key": "jiexi",
+            "name": "接喜解析",
+            "type": 1,
+            "url": "https://api.jiexi.la/?url="
+        },
+        {
+            "key": "playerjy",
+            "name": "JY解析",
+            "type": 1,
+            "url": "https://jx.playerjy.com/?url="
+        },
+        {
+            "key": "bajie",
+            "name": "八杰解析",
+            "type": 1,
+            "url": "https://vip.bajiecaiji.com/parse/?url="
         }
     ],
     "flags": [
