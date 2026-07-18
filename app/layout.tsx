@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { TVNavigation } from "@/components/TVNavigation";
 import { Analytics } from "@vercel/analytics/react";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { PasswordGate } from "@/components/PasswordGate";
@@ -82,6 +83,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
+          <TVNavigation />
           <PasswordGate hasEnvPassword={!!process.env.ACCESS_PASSWORD}>
             <AdKeywordsWrapper />
             {children}
