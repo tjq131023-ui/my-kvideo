@@ -702,5 +702,54 @@
             "quickSearch": 1,
             "filterable": 1
         }
-    ]
+    ],
+    "parses": [
+        {
+            "key": "xmflv",
+            "name": "解析①",
+            "type": 1,
+            "url": "https://jx.xmflv.cc/?url="
+        },
+        {
+            "key": "yparse",
+            "name": "解析②",
+            "type": 1,
+            "url": "https://jx.yparse.com/index.php?url="
+        },
+        {
+            "key": "okjx",
+            "name": "解析③",
+            "type": 1,
+            "url": "https://okjx.cc/?url="
+        },
+        {
+            "key": "m3u8",
+            "name": "解析④",
+            "type": 1,
+            "url": "https://jx.m3u8.tv/jiexi/?url="
+        },
+        {
+            "key": "blm3u8",
+            "name": "解析⑤",
+            "type": 1,
+            "url": "https://jx.bozrc.com:4433/player/?url="
+        }
+    ],
+    "flags": [
+        "youku",
+        "iqiyi",
+        "qq",
+        "1905",
+        "pptv",
+        "mgtv",
+        "bilibili",
+        "sohu",
+        "tudou",
+        "letv",
+        "qiyi",
+        "tencent",
+        "wasu",
+        "huanxi"
+    ],
+    "ads": []
 }
